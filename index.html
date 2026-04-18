@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestionnaire Performance EPS</title>
+    <style>
+        :root { --primary: #0056b3; --secondary: #6c757d; --light: #f8f9fa; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #e9ecef; margin: 0; padding: 20px; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
+        h1 { color: var(--primary); border-bottom: 3px solid var(--primary); padding-bottom: 10px; text-align: center; }
+        
+        .setup-section, .calc-section { margin-bottom: 30px; padding: 20px; border: 1px solid #dee2e6; border-radius: 10px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        
+        label { font-weight: bold; display: block; margin-bottom: 5px; color: #495057; }
+        input, select { width: 100%; padding: 12px; border: 1px solid #ced4da; border-radius: 6px; margin-bottom: 15px; box-sizing: border-box; }
+        
+        button { cursor: pointer; border: none; border-radius: 6px; padding: 12px 20px; font-weight: bold; transition: 0.3s; }
+        .btn-add { background: var(--primary); color: white; width: 100%; }
+        .btn-export { background: #28a745; color: white; margin-top: 10px; }
+        button:hover { opacity: 0.8; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th { background: var(--primary); color: white; padding: 12px; text-align: left; }
+        td { padding: 12px; border-bottom: 1px solid #dee2e6; }
+        tr:nth-child(even) { background: #f2f2f2; }
+        
+        .badge { padding: 5px 10px; border-radius: 20px; font-size: 0.8em; font-weight: bold; }
+        .badge-vma { background: #e7f1ff; color: #0056b3; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>📊 Gestionnaire de Performance EPS</h1>
+
+    <div class="setup-section">
+        <h3>1. Ajouter un élève</h3>
+        <div class="grid">
+            <div>
+                <label>Nom de l'élève</label>
+                <input type="text" id="nom" placeholder="Nom Prénom">
+            </div>
+            <div>
+                <label>VMA de référence (km/h)</label>
+                <input type="number" id="vma_ref" step="0.5" placeholder="Ex: 12">
+            </div>
+        </div>
+        <button class="btn-add" onclick="ajouterEleve()">Ajouter à la liste</button>
+    </div>
+
+    <div class="calc-section">
+        <h3>2. Suivi de la classe</h3>
+        <table id="tableauEleves">
+            <thead>
+                <tr>
+                    <th>Élève</th>
+                    <th>VMA Réf</th>
+                    <th>Performance (m)</th>
+                    <th>% Atteint</th>
+                    <th>Note</th>
+                </tr>
+            </thead>
+            <tbody id="corpsTableau">
+                </tbody>
+        </table>
+        <button class="btn-export" onclick="window.print()">🖨️ Imprimer / Sauver en PDF</button>
+    </div>
+</div>
+
+<script>
+    // Charger les données sauvegardées au démarrage
+    window.onload = function() {
+        const sauvegardes = JSON.parse(localStorage.getItem('classe_eps')) || [];
+        sauvegardes.forEach(e => afficherDansTableau(e));
+    };
+
+    function ajouterEleve() {
+        const nom = document.getElementById('nom').value;
+        const vma = document.getElementById('vma_ref').value;
+
+        if(!nom || !vma) return alert("Remplissez les champs !");
+
+        const eleve = { nom, vma, id: Date.now() };
+        
+        // Sauvegarder
+        const classe = JSON.parse(localStorage.getItem('classe_eps')) || [];
+        classe.push(eleve);
+        localStorage.setItem('classe_eps', JSON.stringify(classe));
+
+        afficherDansTableau(eleve);
+        
+        // Reset champs
+        document.getElementById('nom').value = "";
+        document.getElementById('vma_ref').value = "";
+    }
+
+    function afficherDansTableau(eleve) {
+        const tbody = document.getElementById('corpsTableau');
+        const row = tbody.insertRow();
+        row.innerHTML = `
+            <td>${eleve.nom}</td>
+            <td><span class="badge badge-vma">${eleve.vma} km/h</span></td>
+            <td><input type="number" placeholder="Distance" oninput="calculerNote(this, ${eleve.vma})"></td>
+            <td class="pourcentage">-</td>
+            <td class="note" style="font-weight:bold">-</td>
+        `;
+    }
+
+    function calculerNote(input, vma) {
+        const distance = input.value;
+        const ligne = input.parentElement.parentElement;
+        const cellPct = ligne.querySelector('.pourcentage');
+        const cellNote = ligne.querySelector('.note');
+
+        if(distance > 0) {
+            // Exemple de calcul : Course de 12 minutes
+            // Vitesse atteinte = (distance / 1000) / (12 / 60)
+            const vitesseAtteinte = (distance / 1000) / (12 / 60);
+            const pourcentage = (vitesseAtteinte / vma) * 100;
+            
+            // Barème simple : 100% de la VMA = 20/20, 80% = 10/20
+            let note = (pourcentage - 60) * (20 / 40); 
+            note = Math.max(0, Math.min(20, note));
+
+            cellPct.innerText = pourcentage.toFixed(1) + " %";
+            cellNote.innerText = note.toFixed(1) + " / 20";
+            cellNote.style.color = note >= 10 ? "#28a745" : "#dc3545";
+        }
+    }
+</script>
+
+</body>
+</html>
