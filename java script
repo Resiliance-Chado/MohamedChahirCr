@@ -1,0 +1,37 @@
+function calculerPlan() {
+    const vma = parseFloat(document.getElementById('vmaInput').value);
+    const intensite = parseFloat(document.getElementById('intensiteInput').value);
+    
+    if (isNaN(vma) || isNaN(intensite)) {
+        alert("Veuillez saisir des chiffres valides.");
+        return;
+    }
+
+    // Calcul de la vitesse (km/h)
+    const vitesse = (vma * intensite) / 100;
+
+    // Calcul de l'allure (min/km)
+    const tempsDecimal = 60 / vitesse;
+    const minutes = Math.floor(tempsDecimal);
+    const secondes = Math.round((tempsDecimal - minutes) * 60);
+    const allureFormatee = `${minutes}:${secondes < 10 ? '0' : ''}${secondes}`;
+
+    // Affichage dans la zone de résultat
+    document.getElementById('vitesseCible').innerText = vitesse.toFixed(2);
+    document.getElementById('allureCible').innerText = allureFormatee;
+    document.getElementById('resultBox').style.display = 'grid';
+
+    // Ajout au tableau historique
+    ajouterAuTableau(vma, intensite, vitesse.toFixed(2), allureFormatee);
+}
+
+function ajouterAuTableau(vma, pct, vit, all) {
+    const tbody = document.getElementById('tableBody');
+    const row = tbody.insertRow(0); // Ajoute en haut de la liste
+    row.innerHTML = `
+        <td>${vma}</td>
+        <td>${pct}%</td>
+        <td><strong>${vit}</strong></td>
+        <td>${all}</td>
+    `;
+}
