@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Calculateur Performance VMA</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="hero">
+      <p class="tag">EPS · Outil interactif</p>
+      <h1>Calculateur de Performance VMA</h1>
+      <p class="subtitle">
+        Version simple inspiree du calculateur de performance (VMA, allure,
+        temps predit, zones et passages).
+      </p>
+    </header>
+
+    <main class="container">
+      <section class="card">
+        <h2>Profil Athlete</h2>
+        <div class="grid">
+          <label>
+            Nom
+            <input id="athleteName" type="text" placeholder="Nom complet" />
+          </label>
+          <label>
+            Sexe
+            <select id="athleteSex">
+              <option value="">--</option>
+              <option>Masculin</option>
+              <option>Feminin</option>
+            </select>
+          </label>
+          <label>
+            Categorie
+            <select id="athleteCategory">
+              <option value="">--</option>
+              <option>Cadet</option>
+              <option>Junior</option>
+              <option>Senior</option>
+              <option>Master</option>
+            </select>
+          </label>
+          <label>
+            VMA (km/h)
+            <input id="vma" type="number" min="8" max="30" step="0.1" value="18" />
+          </label>
+          <label>
+            Distance cible
+            <select id="distance">
+              <option value="800">800 m</option>
+              <option value="1000">1000 m</option>
+              <option value="1500" selected>1500 m</option>
+              <option value="3000">3000 m</option>
+              <option value="5000">5000 m</option>
+              <option value="10000">10000 m</option>
+              <option value="21097">Semi-Marathon</option>
+              <option value="42195">Marathon</option>
+            </select>
+          </label>
+          <label>
+            % VMA applique
+            <input id="vmaPercent" type="number" min="60" max="140" value="106" />
+          </label>
+          <label>
+            Distance tour de piste (m)
+            <input id="lapDistance" type="number" min="100" step="10" value="400" />
+          </label>
+        </div>
+        <button id="computeBtn">Calculer</button>
+      </section>
+
+      <section class="card">
+        <h2>Resultat principal</h2>
+        <div class="metrics">
+          <article>
+            <p>Temps predit</p>
+            <h3 id="predictedTime">--</h3>
+          </article>
+          <article>
+            <p>Allure</p>
+            <h3 id="pace">--</h3>
+          </article>
+          <article>
+            <p>Vitesse cible</p>
+            <h3 id="speed">--</h3>
+          </article>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Cadence de competition (passages)</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Passage</th>
+              <th>Distance cumulee</th>
+              <th>Temps cumule</th>
+              <th>Temps du tour</th>
+            </tr>
+          </thead>
+          <tbody id="splitsBody">
+            <tr>
+              <td colspan="4">Cliquez sur Calculer pour generer le cadencier.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="card">
+        <h2>Zones d'entrainement (Z1 a Z5)</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Zone</th>
+              <th>% VMA</th>
+              <th>Vitesse (km/h)</th>
+              <th>Allure (min/km)</th>
+            </tr>
+          </thead>
+          <tbody id="zonesBody"></tbody>
+        </table>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
