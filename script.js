@@ -1,6 +1,3 @@
-const totalScoreEl = document.getElementById("totalScore");
-const scoreLevelEl = document.getElementById("scoreLevel");
-const scoreInputs = Array.from(document.querySelectorAll(".score-input"));
 const vmaInput = document.getElementById("vma");
 const distanceInput = document.getElementById("distance");
 const vmaPercentInput = document.getElementById("vmaPercent");
@@ -12,6 +9,10 @@ const paceEl = document.getElementById("pace");
 const speedEl = document.getElementById("speed");
 const splitsBody = document.getElementById("splitsBody");
 const zonesBody = document.getElementById("zonesBody");
+
+const totalScoreEl = document.getElementById("totalScore");
+const scoreLevelEl = document.getElementById("scoreLevel");
+const scoreInputs = Array.from(document.querySelectorAll(".score-input"));
 
 const zones = [
   { name: "Z1 - Recuperation", min: 55, max: 65 },
@@ -26,10 +27,7 @@ function secondsToTime(totalSeconds) {
   const h = Math.floor(s / 3600);
   const m = Math.floor((s % 3600) / 60);
   const sec = s % 60;
-
-  if (h > 0) {
-    return `${h}h ${String(m).padStart(2, "0")}m ${String(sec).padStart(2, "0")}s`;
-  }
+  if (h > 0) return `${h}h ${String(m).padStart(2, "0")}m ${String(sec).padStart(2, "0")}s`;
   return `${m}'${String(sec).padStart(2, "0")}"`;
 }
 
@@ -70,6 +68,7 @@ function buildSplits(totalDistance, totalTimeSec, lapDistance) {
 }
 
 function renderZones(vma) {
+  if (!zonesBody) return;
   zonesBody.innerHTML = "";
   zones.forEach((zone) => {
     const avgPercent = (zone.min + zone.max) / 2;
@@ -85,22 +84,40 @@ function renderZones(vma) {
   });
 }
 
+function getScoreLevel(score) {
+  if (score >= 16) return "Excellent";
+  if (score >= 14) return "Tres bien";
+  if (score >= 12) return "Bien";
+  if (score >= 10) return "Satisfaisant";
+  return "A renforcer";
+}
+
+function updateEvaluation() {
+  if (!totalScoreEl || !scoreLevelEl) return;
+  const total = scoreInputs.reduce((sum, input) => {
+    const value = parseFloat(input.value);
+    return sum + (Number.isFinite(value) ? value : 0);
+  }, 0);
+  totalScoreEl.textContent = `${total.toFixed(1)} / 20`;
+  scoreLevelEl.textContent = getScoreLevel(total);
+}
+
 function compute() {
+  if (!vmaInput || !distanceInput || !vmaPercentInput || !lapDistanceInput) return;
+  if (!predictedTimeEl || !paceEl || !speedEl || !splitsBody) return;
+
   const vma = parseFloat(vmaInput.value);
   const distance = parseFloat(distanceInput.value);
   const percent = parseFloat(vmaPercentInput.value);
   const lapDistance = parseFloat(lapDistanceInput.value);
 
-  if (!vma || !distance || !percent || !lapDistance) {
-    return;
-  }
+  if (!vma || !distance || !percent || !lapDistance) return;
 
   const targetSpeed = (vma * percent) / 100;
-  const timeSec = (distance / 1000) / targetSpeed * 3600;
-  const pace = paceFromSpeed(targetSpeed);
+  const timeSec = (distance / 1000 / targetSpeed) * 3600;
 
   predictedTimeEl.textContent = secondsToTime(timeSec);
-  paceEl.textContent = pace;
+  paceEl.textContent = paceFromSpeed(targetSpeed);
   speedEl.textContent = `${targetSpeed.toFixed(1)} km/h`;
 
   const splits = buildSplits(distance, timeSec, lapDistance);
@@ -119,25 +136,9 @@ function compute() {
   renderZones(vma);
 }
 
-computeBtn.addEventListener("click", compute);
-window.addEventListener("DOMContentLoaded", compute);
-
-function getScoreLevel(score) {
-  if (score >= 16) return "Excellent";
-  if (score >= 14) return "Tres bien";
-  if (score >= 12) return "Bien";
-  if (score >= 10) return "Satisfaisant";
-  return "A renforcer";
-}
-
-function updateEvaluation() {
-  const total = scoreInputs.reduce((sum, input) => {
-    const value = parseFloat(input.value);
-    return sum + (Number.isFinite(value) ? value : 0);
-  }, 0);
-
-  totalScoreEl.textContent = `${total.toFixed(1)} / 20`;
-  scoreLevelEl.textContent = getScoreLevel(total);
-}
+if (computeBtn) computeBtn.addEventListener("click", compute);
 scoreInputs.forEach((input) => input.addEventListener("input", updateEvaluation));
-window.addEventListener("DOMContentLoaded", updateEvaluation);
+window.addEventListener("DOMContentLoaded", () => {
+  compute();
+  updateEvaluation();
+});
