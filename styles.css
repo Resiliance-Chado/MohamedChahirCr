@@ -134,3 +134,17 @@ th {
 const totalScoreEl = document.getElementById("totalScore");
 const scoreLevelEl = document.getElementById("scoreLevel");
 const scoreInputs = Array.from(document.querySelectorAll(".score-input"));
+textarea {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  width: 100%;
+  resize: vertical;
+}
+
+.section-note { margin-top: 0; color: var(--muted); }
+.score-input { max-width: 110px; }
+.evaluation-summary { margin-top: 14px; }
+.appreciation-field { margin-top: 14px; }
