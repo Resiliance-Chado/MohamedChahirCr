@@ -131,3 +131,6 @@ th {
   color: var(--muted);
   font-weight: 700;
 }
+const totalScoreEl = document.getElementById("totalScore");
+const scoreLevelEl = document.getElementById("scoreLevel");
+const scoreInputs = Array.from(document.querySelectorAll(".score-input"));
