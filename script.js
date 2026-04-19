@@ -144,3 +144,22 @@ textarea {
 .appreciation-field {
   margin-top: 14px;
 }
+function getScoreLevel(score) {
+  if (score >= 16) return "Excellent";
+  if (score >= 14) return "Tres bien";
+  if (score >= 12) return "Bien";
+  if (score >= 10) return "Satisfaisant";
+  return "A renforcer";
+}
+
+function updateEvaluation() {
+  const total = scoreInputs.reduce((sum, input) => {
+    const value = parseFloat(input.value);
+    return sum + (Number.isFinite(value) ? value : 0);
+  }, 0);
+
+  totalScoreEl.textContent = `${total.toFixed(1)} / 20`;
+  scoreLevelEl.textContent = getScoreLevel(total);
+}
+scoreInputs.forEach((input) => input.addEventListener("input", updateEvaluation));
+window.addEventListener("DOMContentLoaded", updateEvaluation);
