@@ -1,3 +1,6 @@
+const totalScoreEl = document.getElementById("totalScore");
+const scoreLevelEl = document.getElementById("scoreLevel");
+const scoreInputs = Array.from(document.querySelectorAll(".score-input"));
 const vmaInput = document.getElementById("vma");
 const distanceInput = document.getElementById("distance");
 const vmaPercentInput = document.getElementById("vmaPercent");
