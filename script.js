@@ -118,32 +118,7 @@ function compute() {
 
 computeBtn.addEventListener("click", compute);
 window.addEventListener("DOMContentLoaded", compute);
-textarea {
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 10px;
-  font-size: 0.95rem;
-  font-family: inherit;
-  width: 100%;
-  resize: vertical;
-}
 
-.section-note {
-  margin-top: 0;
-  color: var(--muted);
-}
-
-.score-input {
-  max-width: 110px;
-}
-
-.evaluation-summary {
-  margin-top: 14px;
-}
-
-.appreciation-field {
-  margin-top: 14px;
-}
 function getScoreLevel(score) {
   if (score >= 16) return "Excellent";
   if (score >= 14) return "Tres bien";
